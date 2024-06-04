@@ -1,9 +1,12 @@
 import numpy as np
 from esa_snappy import ProductIO
 from esa_snappy import HashMap
+from esa_snappy import File
 from esa_snappy import GPF
-from esa_snappy import Product
+from esa_snappy import ProgressMonitor
 from typing import Union, Any, Optional
+from colorama import init as colorama_init
+from colorama import Fore
 
 
 # * This class serves as a wrapper for the ESA-SNAP (Sentinel Application Platform) Product class,
@@ -23,6 +26,9 @@ class SnapProduct():
 
         self.__height = self.__product.getSceneRasterHeight()
         self.__width = self.__product.getSceneRasterWidth()
+
+    def __del__(self):
+        self.__product.closeIO()
 
     @property
     def product(self):
@@ -51,12 +57,12 @@ class SnapProduct():
         '''
         return a numpy.ndarray with each band as axis 0, each row as axis 1 and each col as axis 2, namely the shape of ndarray is (band_num x height x width).
         '''
-        output = np.empty((self.__band_num, self.__height * self.__width), dtype= np.float)
+        output = np.empty((self.__band_num, self.__height * self.__width), dtype= np.float64)
 
         for idx, band_name in enumerate(self.__band_names):
             band = self.__product.getBand(band_name)
 
-            temp = np.empty((self.__width * self.__height), dtype= np.float)
+            temp = np.empty((self.__width * self.__height), dtype= np.float64)
             band.readPixels(0, 0, self.__width, self.__height, temp)
             output[idx] = temp
             print(f'{idx + 1}/{self.__band_num} band {band_name} completed.')
@@ -67,7 +73,10 @@ class SnapProduct():
         '''
         write the product.
         '''
-        ProductIO.writeProduct(self.__product, path, format)
+        # ProductIO.writeProduct(self.__product, path, format)
+        print(Fore.BLUE + 'Product writting' + Fore.WHITE + ' for ' + Fore.GREEN + self.product_name + Fore.WHITE + ' starts...')
+        GPF.writeProduct(self.product, File(path), format, False, ProgressMonitor.NULL)
+        print(Fore.BLUE + 'Product writting' + Fore.WHITE + ' for ' + Fore.GREEN + self.product_name + Fore.WHITE + ' has completed.')
 
 
 class SnapBand():
@@ -81,14 +90,6 @@ def _dict2hashmap(dict_: dict):
         hashmap.put(key, dict_[key])
     
     return hashmap
-
-
-def _SNAP_GPF(operator: str, para_dict: dict, product: SnapProduct):
-    processing_parameters = _dict2hashmap(para_dict)
-    output = GPF.createProduct(operator, processing_parameters, product.__product)
-
-    return SnapProduct(output)
-
 
 # * 仅部分操作
 OPERATOR_LIST = [
@@ -118,10 +119,11 @@ class Operator(ABC):
         pass
 
     def __call__(self, product: SnapProduct) -> SnapProduct:
-        print(f'{self.__operator_name} for {product.product_name} begins ...')
+        print(Fore.BLUE + self.__operator_name + Fore.WHITE + ' for ' + Fore.GREEN + product.product_name + Fore.WHITE + ' starts ...')
         processing_parameters = _dict2hashmap(self.__parameters)
         output = GPF.createProduct(self.__operator_name, processing_parameters, product.product)
-        print(f'{self.__operator_name} for {product.product_name} has completed.\n')
+        print(Fore.BLUE + self.__operator_name + Fore.WHITE + ' for ' + Fore.GREEN + product.product_name + Fore.WHITE + ' has completed.')
+        print(Fore.YELLOW + '======================================================================================\n')
         return SnapProduct(output)
     
 

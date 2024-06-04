@@ -15,7 +15,6 @@ class Calibration(core.Operator):
 
         self._Operator__operator_name = 'Calibration'
         self._Operator__parameters = {
-            # 'sourceBands': 'VH,VV',
             'outputImageInComplex': 'true' if is_save_as_complex_output else 'false',
             'outputImageScaleInDb': 'true' if is_save_as_scale_in_db else 'false',
             'outputSigmaBand': 'true' if is_ouput_sigma0_band else 'false',

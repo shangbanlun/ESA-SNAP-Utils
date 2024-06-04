@@ -1,0 +1,249 @@
+<graph id="someGraphId">
+    <version>1.0</version>
+    <node id="someNodeId">
+        <operator>Apply-Orbit-File</operator>
+        <sources>
+            <source>${source}</source>
+        </sources>
+        <parameters>
+            <orbitType>string</orbitType>
+            <polyDegree>int</polyDegree>
+            <continueOnFail>boolean</continueOnFail>
+        </parameters>
+    </node>
+</graph>
+
+
+<graph id="someGraphId">
+    <version>1.0</version>
+    <node id="someNodeId">
+        <operator>Calibration</operator>
+        <sources>
+            <source>${source}</source>
+        </sources>
+        <parameters>
+            <sourceBands>string,string,string,...</sourceBands>
+            <auxFile>string</auxFile>
+            <externalAuxFile>file</externalAuxFile>
+            <outputImageInComplex>boolean</outputImageInComplex>
+            <outputImageScaleInDb>boolean</outputImageScaleInDb>
+            <createGammaBand>boolean</createGammaBand>
+            <createBetaBand>boolean</createBetaBand>
+            <selectedPolarisations>string,string,string,...</selectedPolarisations>
+            <outputSigmaBand>boolean</outputSigmaBand>
+            <outputGammaBand>boolean</outputGammaBand>
+            <outputBetaBand>boolean</outputBetaBand>
+        </parameters>
+    </node>
+</graph>
+
+
+<graph id="someGraphId">
+    <version>1.0</version>
+    <node id="someNodeId">
+        <operator>Ellipsoid-Correction-RD</operator>
+        <sources>
+            <source>${source}</source>
+        </sources>
+        <parameters>
+            <sourceBands>string,string,string,...</sourceBands>
+            <demName>string</demName>
+            <externalDEMFile>file</externalDEMFile>
+            <externalDEMNoDataValue>double</externalDEMNoDataValue>
+            <externalDEMApplyEGM>boolean</externalDEMApplyEGM>
+            <demResamplingMethod>string</demResamplingMethod>
+            <imgResamplingMethod>string</imgResamplingMethod>
+            <pixelSpacingInMeter>double</pixelSpacingInMeter>
+            <pixelSpacingInDegree>double</pixelSpacingInDegree>
+            <mapProjection>string</mapProjection>
+            <alignToStandardGrid>boolean</alignToStandardGrid>
+            <standardGridOriginX>double</standardGridOriginX>
+            <standardGridOriginY>double</standardGridOriginY>
+            <nodataValueAtSea>boolean</nodataValueAtSea>
+            <saveDEM>boolean</saveDEM>
+            <saveLatLon>boolean</saveLatLon>
+            <saveIncidenceAngleFromEllipsoid>boolean</saveIncidenceAngleFromEllipsoid>
+            <saveLocalIncidenceAngle>boolean</saveLocalIncidenceAngle>
+            <saveProjectedLocalIncidenceAngle>boolean</saveProjectedLocalIncidenceAngle>
+            <saveSelectedSourceBand>boolean</saveSelectedSourceBand>
+            <saveLayoverShadowMask>boolean</saveLayoverShadowMask>
+            <outputComplex>boolean</outputComplex>
+            <applyRadiometricNormalization>boolean</applyRadiometricNormalization>
+            <saveSigmaNought>boolean</saveSigmaNought>
+            <saveGammaNought>boolean</saveGammaNought>
+            <saveBetaNought>boolean</saveBetaNought>
+            <incidenceAngleForSigma0>string</incidenceAngleForSigma0>
+            <incidenceAngleForGamma0>string</incidenceAngleForGamma0>
+            <auxFile>string</auxFile>
+            <externalAuxFile>file</externalAuxFile>
+        </parameters>
+    </node>
+</graph>
+
+
+<graph id="someGraphId">
+    <version>1.0</version>
+    <node id="someNodeId">
+        <operator>Multilook</operator>
+        <sources>
+            <source>${source}</source>
+        </sources>
+        <parameters>
+            <sourceBands>string,string,string,...</sourceBands>
+            <nRgLooks>int</nRgLooks>
+            <nAzLooks>int</nAzLooks>
+            <outputIntensity>boolean</outputIntensity>
+            <grSquarePixel>boolean</grSquarePixel>
+        </parameters>
+    </node>
+</graph>
+
+
+<graph id="someGraphId">
+    <version>1.0</version>
+    <node id="someNodeId">
+        <operator>Polarimetric-Decomposition</operator>
+        <sources>
+            <source>${source}</source>
+        </sources>
+        <parameters>
+            <decomposition>string</decomposition>
+            <windowSize>int</windowSize>
+            <outputHAAlpha>boolean</outputHAAlpha>
+            <outputBetaDeltaGammaLambda>boolean</outputBetaDeltaGammaLambda>
+            <outputAlpha123>boolean</outputAlpha123>
+            <outputLambda123>boolean</outputLambda123>
+            <outputTouziParamSet0>boolean</outputTouziParamSet0>
+            <outputTouziParamSet1>boolean</outputTouziParamSet1>
+            <outputTouziParamSet2>boolean</outputTouziParamSet2>
+            <outputTouziParamSet3>boolean</outputTouziParamSet3>
+            <outputHuynenParamSet0>boolean</outputHuynenParamSet0>
+            <outputHuynenParamSet1>boolean</outputHuynenParamSet1>
+        </parameters>
+    </node>
+</graph>
+
+
+<graph id="someGraphId">
+    <version>1.0</version>
+    <node id="someNodeId">
+        <operator>Polarimetric-Matrices</operator>
+        <sources>
+            <source>${source}</source>
+        </sources>
+        <parameters>
+            <matrix>string</matrix>
+        </parameters>
+    </node>
+</graph>
+
+
+<graph id="someGraphId">
+    <version>1.0</version>
+    <node id="someNodeId">
+        <operator>Subset</operator>
+        <sources>
+            <source>${source}</source>
+        </sources>
+        <parameters>
+            <sourceBands>string,string,string,...</sourceBands>
+            <tiePointGrids>string,string,string,...</tiePointGrids>
+            <region>rectangle</region>
+            <referenceBand>string</referenceBand>
+            <geoRegion>geometry</geoRegion>
+            <subSamplingX>int</subSamplingX>
+            <subSamplingY>int</subSamplingY>
+            <fullSwath>boolean</fullSwath>
+            <copyMetadata>boolean</copyMetadata>
+        </parameters>
+    </node>
+</graph>
+
+
+<graph id="someGraphId">
+    <version>1.0</version>
+    <node id="someNodeId">
+        <operator>Terrain-Correction</operator>
+        <sources>
+            <source>${source}</source>
+        </sources>
+        <parameters>
+            <sourceBands>string,string,string,...</sourceBands>
+            <demName>string</demName>
+            <externalDEMFile>file</externalDEMFile>
+            <externalDEMNoDataValue>double</externalDEMNoDataValue>
+            <externalDEMApplyEGM>boolean</externalDEMApplyEGM>
+            <demResamplingMethod>string</demResamplingMethod>
+            <imgResamplingMethod>string</imgResamplingMethod>
+            <pixelSpacingInMeter>double</pixelSpacingInMeter>
+            <pixelSpacingInDegree>double</pixelSpacingInDegree>
+            <mapProjection>string</mapProjection>
+            <alignToStandardGrid>boolean</alignToStandardGrid>
+            <standardGridOriginX>double</standardGridOriginX>
+            <standardGridOriginY>double</standardGridOriginY>
+            <nodataValueAtSea>boolean</nodataValueAtSea>
+            <saveDEM>boolean</saveDEM>
+            <saveLatLon>boolean</saveLatLon>
+            <saveIncidenceAngleFromEllipsoid>boolean</saveIncidenceAngleFromEllipsoid>
+            <saveLocalIncidenceAngle>boolean</saveLocalIncidenceAngle>
+            <saveProjectedLocalIncidenceAngle>boolean</saveProjectedLocalIncidenceAngle>
+            <saveSelectedSourceBand>boolean</saveSelectedSourceBand>
+            <saveLayoverShadowMask>boolean</saveLayoverShadowMask>
+            <outputComplex>boolean</outputComplex>
+            <applyRadiometricNormalization>boolean</applyRadiometricNormalization>
+            <saveSigmaNought>boolean</saveSigmaNought>
+            <saveGammaNought>boolean</saveGammaNought>
+            <saveBetaNought>boolean</saveBetaNought>
+            <incidenceAngleForSigma0>string</incidenceAngleForSigma0>
+            <incidenceAngleForGamma0>string</incidenceAngleForGamma0>
+            <auxFile>string</auxFile>
+            <externalAuxFile>file</externalAuxFile>
+        </parameters>
+    </node>
+</graph>
+
+
+<graph id="someGraphId">
+    <version>1.0</version>
+    <node id="someNodeId">
+        <operator>TOPSAR-Deburst</operator>
+        <sources>
+            <source>${source}</source>
+        </sources>
+        <parameters>
+            <selectedPolarisations>string,string,string,...</selectedPolarisations>
+        </parameters>
+    </node>
+</graph>
+
+
+<graph id="someGraphId">
+    <version>1.0</version>
+    <node id="someNodeId">
+        <operator>TOPSAR-Merge</operator>
+        <sources>
+            <sourceProduct>${sourceProduct}</sourceProduct>
+        </sources>
+        <parameters>
+            <selectedPolarisations>string,string,string,...</selectedPolarisations>
+        </parameters>
+    </node>
+</graph>
+
+
+<graph id="someGraphId">
+    <version>1.0</version>
+    <node id="someNodeId">
+        <operator>TOPSAR-Split</operator>
+        <sources>
+            <source>${source}</source>
+        </sources>
+        <parameters>
+            <subswath>string</subswath>
+            <selectedPolarisations>string,string,string,...</selectedPolarisations>
+            <firstBurstIndex>integer</firstBurstIndex>
+            <lastBurstIndex>integer</lastBurstIndex>
+            <wktAoi>string</wktAoi>
+        </parameters>
+    </node>
+</graph>

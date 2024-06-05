@@ -5,7 +5,6 @@ from esa_snappy import File
 from esa_snappy import GPF
 from esa_snappy import ProgressMonitor
 from typing import Union, Any, Optional
-from colorama import init as colorama_init
 from colorama import Fore
 
 
@@ -77,6 +76,7 @@ class SnapProduct():
         print(Fore.BLUE + 'Product writting' + Fore.WHITE + ' for ' + Fore.GREEN + self.product_name + Fore.WHITE + ' starts...')
         GPF.writeProduct(self.product, File(path), format, False, ProgressMonitor.NULL)
         print(Fore.BLUE + 'Product writting' + Fore.WHITE + ' for ' + Fore.GREEN + self.product_name + Fore.WHITE + ' has completed.')
+        print(Fore.YELLOW + '======================================================================================\n')
 
 
 class SnapBand():

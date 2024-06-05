@@ -22,9 +22,6 @@ def main():
     output = split_operator(product)
 
     # * write the output SnapProduct.
-    output.write_product(f'./example/data/{product.product_name}_IW1_Brusts-8-9.dim')
-
-
-    apply_orbit_file_operator = R.ApplyOrbitFile()
+    output.write_product(f'./example/data/{output.product_name}_IW1_Brusts-8-9.dim')
     
 main()

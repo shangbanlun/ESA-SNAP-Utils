@@ -19,9 +19,15 @@ def main():
 
     # * new a Operator and apply it to a SnapProduct. / 实例化一个
     apply_orbit_file_operator = R.ApplyOrbitFile()
+    calibration_operator = R.Radiometric.Calibration()
+    split_operator = R.Sentinel_1_TOPS.Split(1, bursts= (8, 9))
+
     output = apply_orbit_file_operator(product)
 
-    # * write the output SnapProduct.
-    output.write_product(f'./example/data/{product.product_name}_Orb.dim')
+    output = calibration_operator(output)
+
+    output = split_operator(output)
+
+    output.write_product(f'./example/data/{output.product_name}_IW1_Brusts-8-9.dim')
 
 main()

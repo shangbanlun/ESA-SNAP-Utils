@@ -21,6 +21,7 @@ class Split(core.Operator):
             'lastBurstIndex': last_burst_index
         }
 
+
     def set_parameter(self, **kwargs):
         pass
 

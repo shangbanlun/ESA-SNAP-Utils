@@ -72,8 +72,8 @@ class SnapProduct():
         '''
         write the product.
         '''
-        # ProductIO.writeProduct(self.__product, path, format)
         print(Fore.BLUE + 'Product writting' + Fore.WHITE + ' for ' + Fore.GREEN + self.product_name + Fore.WHITE + ' starts...')
+        # ProductIO.writeProduct(self.__product, path, format)
         GPF.writeProduct(self.product, File(path), format, False, ProgressMonitor.NULL)
         print(Fore.BLUE + 'Product writting' + Fore.WHITE + ' for ' + Fore.GREEN + self.product_name + Fore.WHITE + ' has completed.')
         print(Fore.YELLOW + '======================================================================================\n')

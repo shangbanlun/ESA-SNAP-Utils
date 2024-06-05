@@ -6,6 +6,9 @@ from esa_snappy import GPF
 from esa_snappy import ProgressMonitor
 from typing import Union, Any, Optional
 from colorama import Fore
+from subprocess import run
+import xml.etree.ElementTree as ET
+from datetime import datetime
 
 
 # * This class serves as a wrapper for the ESA-SNAP (Sentinel Application Platform) Product class,
@@ -16,6 +19,7 @@ class SnapProduct():
     def __init__(self, input: Union[Any, str]) -> None:
         if isinstance(input, str):
             self.__product = ProductIO.readProduct(input)
+            self.__path = input
         else:
             self.__product = input
             
@@ -26,12 +30,17 @@ class SnapProduct():
         self.__height = self.__product.getSceneRasterHeight()
         self.__width = self.__product.getSceneRasterWidth()
 
+
     def __del__(self):
         self.__product.closeIO()
 
     @property
     def product(self):
         return self.__product
+    
+    @property
+    def path(self):
+        return self.__path
 
     @property
     def product_name(self):
@@ -84,13 +93,6 @@ class SnapBand():
         pass
 
 
-def _dict2hashmap(dict_: dict):
-    hashmap = HashMap()
-    for key in dict_:
-        hashmap.put(key, dict_[key])
-    
-    return hashmap
-
 # * 仅部分操作
 OPERATOR_LIST = [
     'Apply-Orbit-File',
@@ -114,19 +116,95 @@ class Operator(ABC):
         self.__operator_name = None
         self.__parameters = None
 
+    @property
+    def name(self):
+        return self.__operator_name
+    
+    @property
+    def parameters(self):
+        return self.__parameters
+
     @abstractmethod
     def set_parameter():
         pass
 
     def __call__(self, product: SnapProduct) -> SnapProduct:
         print(Fore.BLUE + self.__operator_name + Fore.WHITE + ' for ' + Fore.GREEN + product.product_name + Fore.WHITE + ' starts ...')
-        processing_parameters = _dict2hashmap(self.__parameters)
-        output = GPF.createProduct(self.__operator_name, processing_parameters, product.product)
+
+        print(f'gpt {self.__operator_name} -Ssource="{product.path}" -t "{product.path}.dim"')
+        
         print(Fore.BLUE + self.__operator_name + Fore.WHITE + ' for ' + Fore.GREEN + product.product_name + Fore.WHITE + ' has completed.')
         print(Fore.YELLOW + '======================================================================================\n')
-        return SnapProduct(output)
+        return 'Successfully Operation.'
     
 
+def blank_graph_xml():
+    root = ET.Element('graph')
+    root.set('id', 'Graph')
+
+    version = ET.SubElement(root, 'version')
+    version.text = '1.0'
+
+    return root
+
+def add_node(root, id: str, processing_parameters: dict, source_product: Optional[str]= None):
+    node = ET.SubElement(root, 'node')
+    node.set('id', id)
+
+    operator = ET.SubElement(node, 'operator')
+    operator.text = id
+
+    sources = ET.SubElement(node, 'sources')
+    if source_product != None :
+        sourceProduct = ET.SubElement(sources, 'sourceProduct')
+        sourceProduct.set('refid', source_product)
+
+    parameters = ET.SubElement(node, 'parameters')
+    parameters.set('class', 'com.bc.ceres.binding.dom.XppDomElement')
+
+    for parameter_name in processing_parameters:
+        para = ET.SubElement(parameters, parameter_name)
+        if processing_parameters[parameter_name] != None:
+            para.text = processing_parameters[parameter_name]
+
+    return root
+
 class Sequential():
-    def __init__(self) -> None:
-        pass
+    def __init__(self, *args) -> None:
+        # Get the current date and time
+        current_time = datetime.now()
+        self.__xml_path = f'graph_{current_time.date()}-{current_time.hour}-{current_time.minute}-{current_time.second}-{current_time.microsecond}.xml'
+        self.__operators = args
+
+
+    def __call__(self, product: SnapProduct, path) -> None:
+        read_parameters = {
+            'useAdvancedOptions': 'false',
+            'file': product.path,
+            'formatName': 'SENTINEL-1',
+            'copyMetadata': 'true',
+            'bandNames': None,
+            'pixelRegion': f'0,0,{product.size[1]},{product.size[0]}',
+            'maskNames': None
+        }
+
+        root = blank_graph_xml()
+        root = add_node(root, 'Read', read_parameters)
+        before_name = 'Read'
+        operator: Operator
+        for operator in self.__operators:
+            root = add_node(root, operator.name, operator.parameters, before_name)
+            before_name = operator.name
+        
+        write_parameters = {
+            'file': path,
+            'formatName': 'BEAM-DIMAP'
+        }
+        root = add_node(root, 'Write', write_parameters, before_name)
+
+
+        tree = ET.ElementTree(root)
+        tree.write(self.__xml_path)
+
+        # run(f'gpt {self.__xml_path}')
+        # print('graph process over.')

@@ -36,7 +36,7 @@ class Deburst(core.Operator):
 
         self._Operator__operator_name = 'TOPSAR-Deburst'
         self._Operator__parameters = {
-            'selectedPolarisations' : parameter_parser.parse_polarisations(polarisations)
+            'selectedPolarisations' : parameter_parser.selected_polarisations_parser(polarisations)
         }
 
     def set_parameter(self, **kwargs):

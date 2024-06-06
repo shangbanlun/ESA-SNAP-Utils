@@ -15,15 +15,18 @@ def main():
     print(Fore.YELLOW + '==================================================================================\n')
 
     # * read a S1 product. / 读入一个哨兵一号影像产品
-    file_path = '.\example\data\S1A_IW_SLC__1SDV_20150602T215750_20150602T215817_006200_008158_DB54.zip'
-    product = SnapProduct(file_path)
-
+    one_day_data_path = Path('./example/data/2015-06-02')
     graph = Sequential(
-        R.ApplyOrbitFile(),
+        # R.ApplyOrbitFile(),
         R.Radiometric.Calibration(),
-        R.Sentinel_1_TOPS.Split(1, bursts= (8,9))
+        # R.Sentinel_1_TOPS.Split(1, bursts= (8,9)),
+        # R.Sentinel_1_TOPS.Deburst()
     )
 
-    graph(product, f'{product.product_name}__After_Orb_Cal_Split')
+    for file in one_day_data_path.iterdir():
+        print(str(file))
+        product = SnapProduct(str(file))
+        graph(product, f'{one_day_data_path}\{product.product_name}__Orb.dim')
+
 
 main()

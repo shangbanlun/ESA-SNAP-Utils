@@ -1,14 +1,17 @@
+from typing import Union, Optional, Any
+from pathlib import Path
 import numpy as np
+
 from esa_snappy import ProductIO
-from esa_snappy import HashMap
 from esa_snappy import File
 from esa_snappy import GPF
 from esa_snappy import ProgressMonitor
-from typing import Union, Any, Optional
+
 from colorama import Fore
-from subprocess import run
-import xml.etree.ElementTree as ET
+
 from datetime import datetime
+import xml.etree.ElementTree as ET
+from subprocess import run
 
 
 # * This class serves as a wrapper for the ESA-SNAP (Sentinel Application Platform) Product class,
@@ -171,9 +174,10 @@ def add_node(root, id: str, processing_parameters: dict, source_product: Optiona
 
 class Sequential():
     def __init__(self, *args) -> None:
-        # Get the current date and time
+        # * Get the current date and time.
+        home_folder = Path.cwd()
         current_time = datetime.now()
-        self.__xml_path = f'graph_{current_time.date()}-{current_time.hour}-{current_time.minute}-{current_time.second}-{current_time.microsecond}.xml'
+        self.__xml_path = f'{home_folder}/graph_{current_time.date()}-{current_time.hour}-{current_time.minute}-{current_time.second}-{current_time.microsecond}.xml'
         self.__operators = args
 
 
@@ -202,9 +206,13 @@ class Sequential():
         }
         root = add_node(root, 'Write', write_parameters, before_name)
 
-
+        # * save the graph xml file.
         tree = ET.ElementTree(root)
         tree.write(self.__xml_path)
 
-        # run(f'gpt {self.__xml_path}')
-        # print('graph process over.')
+        # * run the gpt graph xml in file.
+        run(f'gpt {self.__xml_path}')
+
+        Path(self.__xml_path).unlink()
+
+        print(f'graph process over.')

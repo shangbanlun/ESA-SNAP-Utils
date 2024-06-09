@@ -1,5 +1,5 @@
 example/data/*
 
-_pycache_
+_pycache_/
 
 *.pyc

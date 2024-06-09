@@ -2,6 +2,20 @@ from ... import core
 from ... import parameter_parser
 from typing import Optional, Tuple
     
+class SliceAssembly(core.Operator):
+    def __init__(
+            self,
+            polarisations: Optional[str] = 'DV'
+        ) -> None:
+        super().__init__()
+
+        self._Operator__operator_name = 'SliceAssembly'
+        self._Operator__parameters = {
+            'selectedPolarisations': parameter_parser.selected_polarisations_parser(polarisations)
+        }
+
+    def set_parameter():
+        pass
 
 class Split(core.Operator):
     def __init__(

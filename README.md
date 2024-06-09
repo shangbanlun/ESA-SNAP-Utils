@@ -15,3 +15,14 @@
 本库中的其它模块都是按照 ESA-SNAP 桌面版中各操作菜单栏的组织方式建立的，类似于辐射标定的操作，其路径为：
 Radar -> Radiometric -> Calibration
 那么辐射标定这一操作对应的类就位于 Rader.Radiometric.Calibration，
+
+
+***
+## 
+testing: slice assambly -> orb -> cal -> deburst -> mat -> ml -> tc
+result: failed, get band noise.
+
+testing: orb -> cal -> deburst -> merge -> mat -> ml -> tc
+
+testing: orb -> cal -> deburst -> cropping -> merge -> mat -> ml -> tc
+

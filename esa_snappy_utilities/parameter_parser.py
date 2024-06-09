@@ -1,6 +1,10 @@
 from typing import Optional, Tuple, Union
 
 
+def boolean_parameter_parser(value: bool) -> str:
+    return 'true' if value else 'false'
+
+
 def selected_polarisations_parser(value: str):
     if value == 'DV' : return 'VH,VV'
     elif value == 'DH' : return 'VH,HH'

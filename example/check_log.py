@@ -11,7 +11,7 @@ def main():
     days.sort()
 
 
-    check_folder_name = 'Orb'
+    check_folder_name = 'Asm_Cal_Deb_Mat_ML'
 
 
     for idx, day in enumerate(days):
@@ -23,8 +23,8 @@ def main():
         for file in files:
             with open(file, 'r') as f:
                 lines = f.readlines()
-                print(check_line==lines[2], len(lines))
-                if len(lines)==15: print(lines[14])
+            print(f'day {idx+1}/{num_days} {day.name}', check_line==lines[2], len(lines))
+            if len(lines)==15: print(lines[14])
 
         
 main()

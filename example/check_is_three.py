@@ -17,6 +17,8 @@ def main():
     for idx, day in enumerate(days):
 
         check_path = day / check_folder_name
-        if not check_path.exists() : print(day.name)
+        files = [file for file in check_path.iterdir() if (file.is_file and file.suffix == '.log')]
+
+        if len(files) == 0 : print(day.name)
 
 main()

@@ -307,8 +307,9 @@ class Sequential():
 
             except subprocess.CalledProcessError as e:
                 stdout = 'error!\n'
-                stderr =  e.output
+                stderr = e.output
                 print('Get error from subprocess.CalledProcessEror..')
+                
             except Exception as e:
                 stdout = 'error!\n'
                 stderr = e.output

@@ -26,3 +26,7 @@ testing: orb -> cal -> deburst -> merge -> mat -> ml -> tc
 
 testing: orb -> cal -> deburst -> cropping -> merge -> mat -> ml -> tc
 
+
+take the subset of the asm image with :
+* left-top corner: lat 31.9049 lon 121.1212
+* right-bot corner: lat 31.3880 lon 121.9957

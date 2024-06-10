@@ -48,17 +48,14 @@ def main():
             output_product_path = f'{output_path}/{day.name}_{output_folder_name}.dim'
             output_log_path = f'{output_path}/{day.name}_{output_folder_name}.log'
 
-            print(f'{day.name} has started...')
-            graph(products, output_product_path)
-            # graph(products, output_product_path, log_path= output_log_path)
-
-            print(f'day {day.name} is over.')
-
+            print(f'graph for {day.name} has started...')
+            # graph(products, output_product_path)
+            graph(products, output_product_path, log_path= output_log_path)
+            print(f'graph {day.name} is over.')
 
         else: 
             continue
         
-        break
         print(Fore.BLUE + f'{idx + 1}/{num_days} has completed!')
         print(Fore.YELLOW + '==============================================================================================================================\n')
         

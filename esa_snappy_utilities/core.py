@@ -221,6 +221,8 @@ def add_node(root, node_id: str, operator: Operator, last_node_id: Union[str, Li
             suffix = f'.{idx}' if idx != 0 else ''
             sourceProduct = ET.SubElement(sources_element, 'sourceProduct' + suffix)
             sourceProduct.set('refid', id)
+    elif last_node_id == None:
+        pass
     else:
         raise TypeError('The last_node_id should be either a string or a list of strings.')
 
@@ -289,30 +291,41 @@ class Sequential():
         tree = ET.ElementTree(root)
         tree.write(self.__xml_path)
 
-
-        # * run the gpt graph xml in file.
-        res = run(
-            (self.__gpt_path, self.__xml_path), 
-            stdout= subprocess.PIPE, 
-            stderr= subprocess.PIPE, 
-            text= True,
-            check= True
-        )
-
-
-        # * save all the output from the terminal if required.
-        stdout = res.stdout
-        stderr = res.stderr
-
         if log_path != None :
+
+            try:
+                # * run the gpt graph xml in file.
+                res = run(
+                    (self.__gpt_path, self.__xml_path), 
+                    stdout= subprocess.PIPE, 
+                    stderr= subprocess.PIPE, 
+                    text= True,
+                    check= True
+                )
+                stdout = res.stdout
+                stderr = res.stderr
+
+            except subprocess.CalledProcessError as e:
+                stdout = 'error!\n'
+                stderr =  e.output
+                print('Get error from subprocess.CalledProcessEror..')
+            except Exception as e:
+                stdout = 'error!\n'
+                stderr = e.output
+                print('Get error from Exception..')
+
+
+            # * save all the output from the terminal.
             with open(log_path, 'w') as f:
                 f.write('Output:\n')
                 f.write(stdout)
                 f.write('ERROR:\n')
                 f.write(stderr)
                 f.close()
+                
+        else:
+            run((self.__gpt_path, self.__xml_path))
 
 
         # * delete the gpt graph xml file and print info. 
         Path(self.__xml_path).unlink()
-        print(f'The graph process for over.')

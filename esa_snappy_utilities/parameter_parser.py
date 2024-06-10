@@ -1,5 +1,11 @@
-from typing import Optional, Tuple, Union
+from typing import Tuple, Union
 
+
+def integer_parameter_parser(value: int) -> str:
+    return str(value)
+
+def float_parameter_parser(value: float) -> str:
+    return str(value)
 
 def boolean_parameter_parser(value: bool) -> str:
     return 'true' if value else 'false'
@@ -24,3 +30,27 @@ def burst_range_parser(value: Tuple[int, int]) -> Tuple[str, str]:
     
     if value[0] < value[1] : return (str(value[0]), str(value[1]))
     else : return (str(value[1]), str(value[0]))
+
+
+def region_parser(value: Tuple[Tuple[float, float], Tuple[float, float]]) -> str:
+    x, y = value[0]
+    x2, y2 = value[1]
+    width, height = x2 - x, y2 - y
+
+    return f'{x},{y},{width},{height}'
+
+
+def geo_region_parser(value: Tuple[Tuple[float, float], Tuple[float, float]]) -> str:
+    if not isinstance(value, tuple) or not all(isinstance(item, tuple) for item in value):
+        raise TypeError('The format of the input must be ((float, float), (float, float))')
+    if not all(isinstance(item, float) for item in value[0]) or not all(isinstance(item, float) for item in value[1]):
+        raise TypeError('The latitude or the longitude you input must be the float number.')
+    
+    lat1, lon1 = value[0]
+    lat2, lon2 = value[1]
+    if any([lat1>90. or lat1<0., lat2>90. or lat2<0.]):
+        raise ValueError('The latitude you input is out of range of 0 ~ 90.')
+    if any([lon1>180. or lon1<0., lon2>180. or lon2<0.]):
+        raise ValueError('The longitude you input is out of range of 0 ~ 180.')
+    
+    return f'POLYGON(({lon1} {lat1}, {lon2} {lat1}, {lon2} {lat2}, {lon1} {lat2}, {lon1} {lat1}))'

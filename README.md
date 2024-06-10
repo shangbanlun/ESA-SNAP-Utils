@@ -30,3 +30,8 @@ testing: orb -> cal -> deburst -> cropping -> merge -> mat -> ml -> tc
 take the subset of the asm image with :
 * left-top corner: lat 31.9049 lon 121.1212
 * right-bot corner: lat 31.3880 lon 121.9957
+
+which the WKT of this rectangle is 
+```
+POLYGON((121.1212 31.9049, 121.9957 31.9049, 121.9957 31.3880, 121.1212 31.3880, 121.1212 31.9049))
+```

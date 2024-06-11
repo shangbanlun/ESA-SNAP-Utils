@@ -241,13 +241,14 @@ def add_node(root, node_id: str, operator: Operator, last_node_id: Union[str, Li
 
 
 class Sequential():
+    GPT_PATH = '/home/wk/program_files/ESA-SNAP/10.0/esa-snap/bin/gpt'
     def __init__(self, *args) -> None:
         # * Get the current date and time.
         home_folder = Path.cwd()
         current_time = datetime.now()
         self.__xml_path = f'{home_folder}/graph_{current_time.date()}-{current_time.hour}-{current_time.minute}-{current_time.second}-{current_time.microsecond}.xml'
         
-        self.__gpt_path = '/home/wk/program_files/ESA-SNAP/10.0/esa-snap/bin/gpt'
+        self.__gpt_path = self.GPT_PATH
         self.__operators = args
 
 
@@ -257,6 +258,16 @@ class Sequential():
             output_format: Optional[str] = 'BEAM-DIMAP',
             log_path: Optional[str] = None
         ) -> None:
+        
+        try:
+            output_path = str(output_path)
+        except Exception:
+            raise TypeError('The output_path you input must be string or can be converted into string by str() function.')
+        
+        try:
+            log_path = str(log_path)
+        except Exception:
+            raise TypeError('The log_path you input must be string or can be converted into string by str() function.')
 
         root = blank_graph_xml()
 

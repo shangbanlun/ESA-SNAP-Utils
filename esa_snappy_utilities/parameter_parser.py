@@ -4,8 +4,10 @@ from typing import Tuple, Union
 def integer_parameter_parser(value: int) -> str:
     return str(value)
 
+
 def float_parameter_parser(value: float) -> str:
     return str(value)
+
 
 def boolean_parameter_parser(value: bool) -> str:
     return 'true' if value else 'false'
@@ -21,7 +23,8 @@ def selected_polarisations_parser(value: str):
 def subswath_parser(value: int) -> str:
     if value not in [1,2,3] :
         raise ValueError('The format of selected subswath you input is not right, it must be one of 1, 2 and 3.')
-    else : return f'IW{value}'
+    
+    return f'IW{value}'
 
 
 def burst_range_parser(value: Tuple[int, int]) -> Tuple[str, str]:
@@ -54,3 +57,10 @@ def geo_region_parser(value: Tuple[Tuple[float, float], Tuple[float, float]]) ->
         raise ValueError('The longitude you input is out of range of 0 ~ 180.')
     
     return f'POLYGON(({lon1} {lat1}, {lon2} {lat1}, {lon2} {lat2}, {lon1} {lat2}, {lon1} {lat1}))'
+
+
+def window_size_parser(value: int) -> str:
+    if not isinstance(value, int) : TypeError('The window size you input must be integer.')
+    if value not in [5, 7, 9, 11, 13, 15, 17]: raise ValueError('The window size you input must be one 5, 7, 9, 11, 13, 15, 17.')
+    
+    return f'{value}x{value}'

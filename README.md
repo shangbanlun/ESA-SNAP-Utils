@@ -7,24 +7,72 @@
 ***
 ## 基础使用
 
-本库的基本功能为依靠 ESA-SNAP Engine 实现多个极化SAR影像的批量操作，这里用哨兵一号A卫星的双极化单视复数影像举例，从哥白尼[https://dataspace.copernicus.eu/]官方网站上下载，我们检索到了覆盖上海及其周边地区的两景影像，分别是：
+本库的基本功能为依靠 ESA-SNAP Engine 实现多个极化SAR影像的批量操作，这里用哨兵一号A卫星的双极化单视复数影像举例，从[哥白尼官方网站](https://dataspace.copernicus.eu/)上下载，我们检索到了覆盖上海及其周边地区的两景影像，分别是：
 
 * S1A_IW_SLC__1SDV_20240602T095511_20240602T095538_054143_069586_39F6.SAFE
 * S1A_IW_SLC__1SDV_20240602T095536_20240602T095602_054143_069586_C640.SAFE
 
 将两个影像下载下来后，对于SLC影像一般的预处理流程如下：
 
-轨道文件替换 TOPSAR影像合并 辐射定标 TOPSAR影像Deburt 研究子区域裁剪 
-
-极化矩阵计算 多视处理 相干斑滤波 极化分解 地形改正 
-
-单个处理的如下：
-
-```python
-import esa
+```mermaid
+graph LR
+    A[轨道文件替换] --> B[TOPSAR影像合并]
+    B --> C[辐射定标]
+    C --> D[TOPSAR影像Deburst]
 ```
 
-上面整个流程的完整脚本代码位于/example目录下，在与该脚本相同的目录下创建一个/dataset文件夹并将两个影像文件置于其中该脚本即可运行，生成的影像同样位于/dataset文件夹下。
+这样生成了完整的一幅包含研究区域在内的影像（若研究区域不位于相邻两幅影像交界处TOPSAR影像合并的步骤可以省去），然后就是接下来的流程
+
+```mermaid
+graph LR
+    A[极化矩阵生成] --> B[多视处理]
+    B --> C[相干斑滤波]
+    C --> D[极化分解]
+    D --> E[地形改正]
+    E --> F[研究区域裁剪]
+```
+
+这里仅用第一个流程的esa-snappy-utilities实现举例，首先是引用：
+
+```python
+from esa_snappy_utilities import SnapProduct
+from esa_snappy_utilities import Sequential
+import esa_snappy_utilities.Radar as Radar
+import esa_snappy_utilities.Raster as Raster
+```
+
+然后指定GPT工具的位置，即ESA-SNAP软件的/bin目录下的gpt，例如：
+
+```python
+Sequential.GPT_PATH = 'gpt.exe'
+```
+
+然后指定Operator
+
+```python
+asm_cal_deb_sub_graph = Sequential(
+        Radar.Sentinel_1_TOPS.SliceAssembly(),
+        Radar.Radiometric.Calibration(),
+        Radar.Sentinel_1_TOPS.Deburst(),
+    )
+```
+
+执行该流程：
+
+```python
+input_path = HOME_FOLDER / orbit_output_folder_name
+    files = [file for file in input_path.iterdir() if (file.is_file() and file.suffix == '.dim')]
+    input_products = (SnapProduct(files[0]), SnapProduct(files[1]))
+
+    output_path = HOME_FOLDER / basic_target_folder_name / f'{day.name}_{basic_target_folder_name}.dim'
+    log_path = HOME_FOLDER / basic_target_folder_name / f'{day.name}_{basic_target_folder_name}.log'
+    # asm_cal_deb_sub_graph(input_products, output_path, log_path= log_path)
+    asm_cal_deb_sub_graph(input_products, output_path)
+```
+
+
+
+上面整个流程的完整脚本代码位于/example/batch_preprocess_example.py文件，在与该脚本相同的目录下创建一个/dataset文件夹并将两个影像文件置于其中该脚本即可运行，生成的影像同样位于/dataset文件夹下。
 
 ***
 ## core模块
@@ -48,28 +96,15 @@ ESA-SNAP 软件在安装了桌面版之外，还提供了一个CLI工具——**
 
 * 这样该流程图就执行完成了。
 
-尽管使用GPT工具大大简化了多个影像的批量处理过程，但仍然需要每次手动更改Read、Write的相关参数，故我们将流程图的制作与执行全部封装在core.Sequential类中，利用Python脚本的灵活性将整个批量处理的过程全部脚本化。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
-
+尽管使用GPT工具大大简化了多个影像的批量处理过程，但仍然需要每次手动更改Read、Write的相关参数，故我们将流程图的制作与执行全部封装在core.Sequential类中，利用Python脚本的灵活性将整个批量处理的过程全部脚本化。
 ***
 ## 其它模块
 本库中的其它模块都是按照 ESA-SNAP 桌面版中各操作菜单栏的组织方式建立的，例如辐射标定的操作，在桌面版中其路径为：Radar -> Radiometric -> Calibration，那么辐射标定这一操作对应的类就位于 Rader.Radiometric.Calibration，
 
 
 ***
-## 
-testing: slice assambly -> orb -> cal -> deburst -> mat -> ml -> tc
-result: failed, get band noise.
+注意Subset操作需要一个目标区域作为参数，该目标区域的表达方式可以有两种，一个是用像素的横纵坐标的方式，即指定一个目标矩形的左上角的横纵坐标和矩形的宽高；另一种则是选用经纬度的方式，即给出矩形的（Well-Known Text, WKT）表达。两种方式示例如下：
 
-testing: orb -> cal -> deburst -> merge -> mat -> ml -> tc
-
-testing: orb -> cal -> deburst -> cropping -> merge -> mat -> ml -> tc
-
-
-take the subset of the asm image with :
-* left-top corner: lat 31.9049 lon 121.1212
-* right-bot corner: lat 31.3880 lon 121.9957
-
-which the WKT of this rectangle is 
 ```
 POLYGON((121.1212 31.9049, 121.9957 31.9049, 121.9957 31.3880, 121.1212 31.3880, 121.1212 31.9049))
 ```

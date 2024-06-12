@@ -24,53 +24,30 @@ def main():
     num_days = len(days)
     days.sort()
 
-    large_geo_region = ((32.1919, 120.8933), (31.0971, 122.3110))
     target_geo_region = ((31.9049, 121.1212), (31.3880, 121.9957))
 
-    asm_cal_deb_sub_graph = Sequential(
-        Radar.Sentinel_1_TOPS.SliceAssembly(),
-        Radar.Radiometric.Calibration(),
-        Radar.Sentinel_1_TOPS.Deburst(),
-        Raster.Subset(geo_region= large_geo_region),
-        Radar.Polarimetric.MatrixGeneration(),
-        Radar.SAR_Utilities.MultiLooking(),
-        Radar.Polarimetric.SpeckleFilter(),
-    )
-
-    mat_ml_sf_dec_tc_graph = Sequential(
+    graph = Sequential(
         Radar.Polarimetric.Decomposition(method= 'H-Alpha Dual Pol Decomposition'),
         Radar.Geometric.TerrainCorrection(),
         Raster.Subset(geo_region= target_geo_region)
     )
 
 
-    orbit_output_folder_name = 'Orb'
-    basic_target_folder_name = 'Basic_Target'
-    H_Alpha_folder_name = 'H-Alpha_Dual_Pol_Decomposition_Target'
+    input_folder_name = 'C2Mat'
+    output_path = 'Decomposition'
 
     for idx, day in enumerate(days):
         print(Fore.BLUE + f'{day.name} has start...')
 
-        # * first step
-        input_path = day / orbit_output_folder_name
-        files = [file for file in input_path.iterdir() if (file.is_file() and file.suffix == '.dim')]
-        input_products = (SnapProduct(files[0]), SnapProduct(files[1]))
-
-        output_path = day / basic_target_folder_name / f'{day.name}_{basic_target_folder_name}.dim'
-        log_path = day / basic_target_folder_name / f'{day.name}_{basic_target_folder_name}.log'
-        # asm_cal_deb_sub_graph(input_products, output_path, log_path= log_path)
-        asm_cal_deb_sub_graph(input_products, output_path)
-
-
         # * second step
-        input_path = day / basic_target_folder_name
+        input_path = day / input_folder_name
         files = [file for file in input_path.iterdir() if (file.is_file() and file.suffix == '.dim')]
         input_product = SnapProduct(files[0])
 
-        output_path = day / H_Alpha_folder_name / f'{day.name}_{H_Alpha_folder_name}.dim'
-        log_path = day / H_Alpha_folder_name / f'{day.name}_{H_Alpha_folder_name}.log'
-        # mat_ml_sf_dec_tc_graph(input_product, output_path, log_path= log_path)
-        mat_ml_sf_dec_tc_graph(input_product, output_path)
+        output_path = day / output_path / f'{day.name}_H-Alpha_Dual_Pol.dim'
+        log_path = day / output_path / f'{day.name}_H-Alpha_Dual_Pol.log'
+        # graph(input_product, output_path, log_path= log_path)
+        graph(input_product, output_path)
 
 
         print(Fore.BLUE + f'({idx + 1}/{num_days}) {day.name} has completed!')

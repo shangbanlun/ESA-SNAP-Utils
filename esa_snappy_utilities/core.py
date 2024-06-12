@@ -98,21 +98,6 @@ class SnapBand():
         pass
 
 
-# * 仅部分操作
-OPERATOR_LIST = [
-    'Apply-Orbit-File',
-    'Calibration',
-    'Ellipsoid-Correction-RD',
-    'Multilook',
-    'Polarimetric-Decomposition',   # * 极化分解
-    'Polarimetric-Matrices',    # * 生成极化矩阵
-    'Subset',   # * 裁剪
-    'Terrain-Correction',   # * 距离多普勒地形改正
-    'TOPSAR-Deburst',   # * 
-    'TOPSAR-Merge',
-    'TOPSAR-Split',
-]
-
 from abc import ABC, abstractmethod
 
 class Operator(ABC):
@@ -241,7 +226,7 @@ def add_node(root, node_id: str, operator: Operator, last_node_id: Union[str, Li
 
 
 class Sequential():
-    GPT_PATH = '/home/wk/program_files/ESA-SNAP/10.0/esa-snap/bin/gpt'
+    GPT_PATH = 'gpt'
     def __init__(self, *args) -> None:
         # * Get the current date and time.
         home_folder = Path.cwd()
@@ -264,10 +249,11 @@ class Sequential():
         except Exception:
             raise TypeError('The output_path you input must be string or can be converted into string by str() function.')
         
-        try:
-            log_path = str(log_path)
-        except Exception:
-            raise TypeError('The log_path you input must be string or can be converted into string by str() function.')
+        if log_path != None :
+            try:
+                log_path = str(log_path)
+            except Exception:
+                raise TypeError('The log_path you input must be string or can be converted into string by str() function.')
 
         root = blank_graph_xml()
 

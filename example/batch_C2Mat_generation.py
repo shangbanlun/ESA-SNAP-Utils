@@ -60,14 +60,14 @@ def main():
     # output_folder_name = 'Complex_Dual_Pol_Image'
 
 
-    # graph = Sequential(
-    #     Radar.Polarimetric.MatrixGeneration(),
-    #     Radar.SAR_Utilities.MultiLooking(),
-    #     Radar.Polarimetric.SpeckleFilter()
-    # )
+    graph = Sequential(
+        Radar.Polarimetric.MatrixGeneration(),
+        Radar.SAR_Utilities.MultiLooking(),
+        Radar.Polarimetric.SpeckleFilter()
+    )
 
-    # input_folder_name = 'Complex_Dual_Pol_Image'
-    # output_folder_name = 'C2Mat'
+    input_folder_name = 'Complex_Dual_Pol_Image'
+    output_folder_name = 'C2Mat'
 
 
     target_geo_region = ((31.9049, 121.1212), (31.3880, 121.9957))
@@ -82,6 +82,36 @@ def main():
     output_folder_name = 'Decomposition'
 
     batch_graph_process(home_folder, graph, input_folder_name, output_folder_name)
+
+
+
+
+class FileError(Exception):
+    pass
+
+
+def get_product_numpy(path: Path):
+    files = [file for file in path.iterdir() if (file.is_file and file.suffix == '.dim')]
+    if len(files) == 1:
+        return SnapProduct(files[0]).to_numpy
+    else:
+        raise FileError('The number of product in this path is not 1!')
+
+
+import numpy as np
+def get_pol_sar_image_features(day_path: str):
+    polarization_ratio_folder = ''
+    phase = ''
+    H_Alpha_decomposition = ''
+
+
+    pr = get_product_numpy(day_path / polarization_ratio_folder)
+    phase = get_product_numpy(day_path / phase)
+    en, ani, alpha = get_product_numpy(day_path / H_Alpha_decomposition)
+
+    features = np.stack([en, ani, alpha, phase, pr], axis= 0)
+
+    return
 
 
 main()

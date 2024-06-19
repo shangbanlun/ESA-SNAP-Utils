@@ -1,11 +1,12 @@
 from ... import core
 from ... import parameter_parser
 from typing import Optional, Tuple
-    
+
+
 class SliceAssembly(core.Operator):
     def __init__(
             self,
-            polarisations: Optional[str] = 'DV'
+            polarisations: Optional[str] = None
         ) -> None:
         super().__init__()
 
@@ -21,7 +22,7 @@ class Split(core.Operator):
     def __init__(
             self,
             subswath: Optional[int] = 1,
-            polarisations: Optional[str] = 'DV',
+            polarisations: Optional[str] = None,
             bursts: Optional[Tuple[int, int]] = (1, 9)
         ) -> None:
         super().__init__()
@@ -43,7 +44,7 @@ class Split(core.Operator):
 class Deburst(core.Operator):
     def __init__(
             self,
-            polarisations: Optional[str] = 'DV'
+            polarisations: Optional[str] = None
         ) -> None:
         super().__init__()
 

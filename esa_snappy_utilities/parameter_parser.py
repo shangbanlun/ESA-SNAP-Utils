@@ -14,6 +14,7 @@ def boolean_parameter_parser(value: bool) -> str:
 
 
 def selected_polarisations_parser(value: str):
+    if value == None : return None
     if value == 'DV' : return 'VH,VV'
     elif value == 'DH' : return 'VH,HH'
     elif value in ['VH', 'HV', 'VV', 'HH'] : return value

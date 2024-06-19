@@ -1,5 +1,6 @@
 from ... import core
 from ... import parameter_parser
+from ...parameter_enum import CRS
 from typing import Optional
 
 
@@ -8,6 +9,7 @@ class TerrainCorrection(core.Operator):
             self,
             source_bands: Optional[str] = None,
             DEM_name: Optional[str] = 'SRTM 3Sec',
+            map_projection: Optional[CRS] = CRS.WGS84DD,
             external_DEM_file: Optional[str] = None,
             external_DEM_no_data_value: Optional[float] = 0.0,
             is_external_DEM_apply_EGM: Optional[bool] = True,
@@ -28,7 +30,7 @@ class TerrainCorrection(core.Operator):
             'externalDEMApplyEGM': parameter_parser.boolean_parameter_parser(is_external_DEM_apply_EGM),
             'demResamplingMethod': DEM_resampling_method,
             'imgResamplingMethod': img_resampling_method,
-            'mapProjection': 'GEOGCS["WGS84(DD)", DATUM["WGS84", SPHEROID["WGS84", 6378137.0, 298.257223563]], PRIMEM["Greenwich", 0.0], UNIT["degree", 0.017453292519943295], AXIS["Geodetic longitude", EAST], AXIS["Geodetic latitude", NORTH], AUTHORITY["EPSG","4326"]]',
+            'mapProjection': map_projection.value,
             'alignToStandardGrid': 'false',
             'standardGridOriginX': '0.0',
             'standardGridOriginY': '0.0',

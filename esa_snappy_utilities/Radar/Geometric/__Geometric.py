@@ -16,7 +16,7 @@ class TerrainCorrection(core.Operator):
             DEM_resampling_method: Optional[str] = 'BILINEAR_INTERPOLATION',
             img_resampling_method: Optional[str] = 'BILINEAR_INTERPOLATION',
             is_no_data_value_at_sea: Optional[bool] = False,
-            is_save_DEM: Optional[bool] = True,
+            is_save_DEM: Optional[bool] = False,
             is_save_LatLon: Optional[bool]= False
         ) -> None:
         super().__init__()

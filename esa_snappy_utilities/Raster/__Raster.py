@@ -3,6 +3,37 @@ from .. import parameter_parser
 from typing import Optional, Tuple
 
 
+class BandMaths(core.Operator):
+    def __init__(
+            self,
+            new_band_name: Optional[str]= 'newBand',
+            new_band_type: Optional[str]= 'float32',
+            expression: str= '',
+            description: Optional[str]= None,
+            unit: Optional[str]= None
+        ) -> None:
+        super().__init__()
+
+        self._Operator__operator_name = 'BandMaths'
+        self._Operator__parameters = {
+            'targetBands' :{
+                'targetBand': {
+                    'name': new_band_name,
+                    'type': new_band_type,
+                    'expression': expression,
+                    'description': description,
+                    'unit': unit,
+                    'noDataValue': '0.0'
+                }
+            },
+            'variables': None
+        }
+
+    
+    def set_parameter():
+        pass
+
+
 class Subset(core.Operator):
     def __init__(
             self,

@@ -1,3 +1,4 @@
+from typing import List
 from pathlib import Path
 import sys
 sys.path.append(".")
@@ -10,20 +11,18 @@ from esa_snappy_utilities import Sequential
 import esa_snappy_utilities.Radar as Radar
 import esa_snappy_utilities.Raster as Raster
 from esa_snappy_utilities.parameter_enum import CRS
+from esa_snappy_utilities.parameter_enum import WriteType
 
 # Sequential.GPT_PATH = '/home/wk/program_files/ESA-SNAP/10.0/esa-snap/bin/gpt'
 Sequential.GPT_PATH = 'gpt.exe'
 
 
-def batch_orb_process(home_folder: Path, input_folder_name: str, output_folder_name: str):
+def batch_orb_process(days: List[Path], input_folder_name: str, output_folder_name: str):
     graph = Sequential(
         Radar.ApplyOrbitFile()
     )
-        
-    # * list all the days in the home_folder
-    days = list(home_folder.iterdir())
+
     num_days = len(days)
-    days.sort()
 
     for idx, day in enumerate(days):
         print(Fore.BLUE + f'{day.name} has start...')
@@ -47,11 +46,9 @@ def batch_orb_process(home_folder: Path, input_folder_name: str, output_folder_n
         break
 
 
-def batch_graph_process(home_folder: Path, graph: Sequential, input_folder_name: str, output_folder_name: str):
-    # * list all the days in the home_folder
-    days = list(home_folder.iterdir())
+def batch_graph_process(days: List[Path], graph: Sequential, input_folder_name: str, output_folder_name: str, output_format: WriteType= WriteType.BEAM_DIMAP):
+
     num_days = len(days)
-    days.sort()
 
     for idx, day in enumerate(days):
         print(Fore.BLUE + f'{day.name} has start...')
@@ -62,10 +59,13 @@ def batch_graph_process(home_folder: Path, graph: Sequential, input_folder_name:
         else :
             input_products = SnapProduct(files[0])
 
-        output_path = day / output_folder_name / f'{day.name}_{output_folder_name}.dim'
+        if output_format == WriteType.BEAM_DIMAP: output_suffix = '.dim'
+        elif output_format == WriteType.GeoTIFF: output_suffix = '.tif'
+        output_path = day / output_folder_name / f'{day.name}_{output_folder_name}{output_suffix}'
         log_path = day / output_folder_name / f'{day.name}_{output_folder_name}.log'
-        # graph(input_products, output_path, log_path= log_path)
-        graph(input_products, output_path)
+        
+        # graph(input_products, output_path, output_format= output_format, log_path= log_path)
+        graph(input_products, output_path, output_format= output_format)
 
 
         print(Fore.BLUE + f'({idx + 1}/{num_days}) {day.name} has completed!')
@@ -77,24 +77,34 @@ def main():
     print(Fore.YELLOW + '==============================================================================================================================\n')
 
     home_folder = Path('D:\Dataset\Image')
+    days = [day for day in home_folder.iterdir() if not day.is_file()]
+    days.sort()
+    days = [days[0]]
 
     # batch_orb_process(home_folder, 'Raw', 'Orb')
 
+    # graph = Sequential(
+    #     Radar.Sentinel_1_TOPS.SliceAssembly(),
+    #     Radar.Radiometric.Calibration(is_ouput_sigma0_band= True),
+    #     Radar.Speckle_Filtering.SingleProductSpeckleFilter(),
+    #     Radar.Geometric.TerrainCorrection(map_projection= CRS.CGCS2000_SH),
+    #     Raster.Data_Conversion.LinearToFromdB()
+    # )
 
+    # input_folder_name = 'Orb'
+    # output_folder_name = 'Sigma_dB'
+
+    # batch_graph_process(home_folder, graph, input_folder_name, output_folder_name)
+
+    geo_region = ((31.906, 121.141), (31.387, 122.017))
     graph = Sequential(
-        Radar.Sentinel_1_TOPS.SliceAssembly(),
-        Radar.Radiometric.Calibration(is_ouput_sigma0_band= True),
-        Radar.Speckle_Filtering.SingleProductSpeckleFilter(),
-        Radar.Geometric.TerrainCorrection(map_projection= CRS.CGCS2000_SH),
-        Raster.Data_Conversion.LinearToFromdB()
+        Raster.Subset(source_bands= 'Sigma0_VV_db,Sigma0_VH_db', geo_region= geo_region)
     )
+    batch_graph_process(days, graph, 'Sigma_dB', 'GeoTiff', WriteType.GeoTIFF)
 
-    
-    input_folder_name = 'Orb'
-    output_folder_name = 'Sigma_dB'
-
-    batch_graph_process(home_folder, graph, input_folder_name, output_folder_name)
-
-
+    # graph = Sequential(
+    #     Raster.BandMaths(new_band_name= 'div', new_band_type= 'float32', expression= 'Sigma0_VH_db/Sigma0_VV_db'),
+    # )
+    # batch_graph_process(days, graph, 'Subset', 'GeoTiff')
 
 main()

@@ -5,6 +5,7 @@ import numpy as np
 from esa_snappy import ProductIO
 from . import parameter_parser
 
+
 from colorama import Fore
 
 from datetime import datetime
@@ -137,6 +138,11 @@ class Operator(ABC):
     #     print(Fore.YELLOW + '======================================================================================\n')
     #     return 'Successfully Operation.'
 
+
+
+from .parameter_enum import WriteType
+
+
 class Read(Operator):
     def __init__(
             self,
@@ -159,22 +165,24 @@ class Read(Operator):
     def set_parameter():
         pass
 
+
 class Write(Operator):
     def __init__(
             self,
             output_path: str,
-            output_format: str
+            output_format: WriteType
         ) -> None:
         super().__init__()
 
         self._Operator__operator_name = 'Write'
         self._Operator__parameters = {
             'file': output_path,
-            'formatName': output_format
+            'formatName': output_format.value
         }
     
     def set_parameter():
         pass
+
 
 def blank_graph_xml():
     root = ET.Element('graph')
@@ -184,6 +192,17 @@ def blank_graph_xml():
     version.text = '1.0'
 
     return root
+
+
+def add_dict_into_element(element, dict_: dict):
+    for key in dict_:
+        sub_element = ET.SubElement(element, key)
+        if isinstance(dict_[key], str):    # * for the parameter value is str type.
+            sub_element.text = dict_[key]
+        elif isinstance(dict_[key], dict):    # * if the parameter value is dict type, keep 
+            add_dict_into_element(sub_element, dict_[key])
+        elif dict_[key] == None: continue    # * if the parameter value is none, just skip.
+
 
 def add_node(root, node_id: str, operator: Operator, last_node_id: Union[str, List[str], None] = None):
     # * add a node element into root element for input operater.
@@ -215,13 +234,8 @@ def add_node(root, node_id: str, operator: Operator, last_node_id: Union[str, Li
     # * add a parameters element into node element.
     parameters_element = ET.SubElement(node_element, 'parameters')
     parameters_element.set('class', 'com.bc.ceres.binding.dom.XppDomElement')
-
-    for parameter_name in operator.parameters:
-        parameter_element = ET.SubElement(parameters_element, parameter_name)
-        if operator.parameters[parameter_name] != None:
-            parameter_element.text = operator.parameters[parameter_name]
-
-
+    add_dict_into_element(parameters_element, operator.parameters) 
+        
     return root
 
 
@@ -234,16 +248,24 @@ class Sequential():
         self.__xml_path = f'{home_folder}/graph_{current_time.date()}-{current_time.hour}-{current_time.minute}-{current_time.second}-{current_time.microsecond}.xml'
         
         self.__gpt_path = self.GPT_PATH
-        self.__operators = args
+        self.__operators = args    # * store all the operators.
 
 
-    def __call__(
-            self, input: Union[SnapProduct, Tuple[SnapProduct]], 
+    def process(
+            self, 
+            input: Union[SnapProduct, Tuple[SnapProduct]], 
             output_path: str, 
-            output_format: Optional[str] = 'BEAM-DIMAP',
+            output_format: Optional[WriteType] = WriteType.BEAM_DIMAP,
             log_path: Optional[str] = None
         ) -> None:
-        
+        '''
+        excuting all the operators by sequence, \n
+        if you leave the log_path just the default value(None), the excuting will output the info into terminal real time,
+        else the excuting will store the info into the log_path you type in.
+        input: SnapProduct or a list of SnapProduct 
+        '''
+
+
         try:
             output_path = str(output_path)
         except Exception:
@@ -327,3 +349,14 @@ class Sequential():
 
         # * delete the gpt graph xml file and print info. 
         Path(self.__xml_path).unlink()
+
+    
+    def __call__(
+            self, input: Union[SnapProduct, Tuple[SnapProduct]], 
+            output_path: str, 
+            output_format: Optional[WriteType] = WriteType.BEAM_DIMAP,
+            log_path: Optional[str] = None
+        ) -> None:
+
+
+        self.process(input, output_path, output_format, log_path)

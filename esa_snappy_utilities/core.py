@@ -60,8 +60,15 @@ class SnapProduct():
     def size(self):
         return self.__height, self.__width
 
-    def __getitem__(self, band_name: str):
-        return self.__product.getBand(band_name)
+    def __getitem__(self, band_name: str) -> np.ndarray:
+        if not isinstance(band_name, str): raise TypeError('The band_name you input must be a string.')
+        if band_name not in self.__band_names: raise ValueError(f'The band_name you input must be one of {self.__band_names}.')
+        
+        band = self.__product.getBand(band_name)
+        temp = np.empty((self.__width * self.__height), dtype= np.float32)
+        band.readPixels(0, 0, self.__width, self.__height, temp)
+
+        return temp
     
     def __str__(self):
         return f'Product name: {self.__product_name}, resolution: {self.__width}x{self.__height}, bands: {self.__band_names}.'
@@ -83,6 +90,7 @@ class SnapProduct():
 
         return np.reshape(output, (self.__band_num, self.__height, self.__width))
     
+
     # def write_product(self, path: str, format: Optional[str] = 'BEAM-DIMAP'):
     #     '''
     #     write the product.
@@ -94,9 +102,7 @@ class SnapProduct():
     #     print(Fore.YELLOW + '======================================================================================\n')
 
 
-class SnapBand():
-    def __init__(self) -> None:
-        pass
+# * The classes below is all about using graph process tools (gpt) to complete the process of the SAR images.
 
 
 from abc import ABC, abstractmethod
@@ -139,9 +145,7 @@ class Operator(ABC):
     #     return 'Successfully Operation.'
 
 
-
 from .parameter_enum import WriteType
-
 
 class Read(Operator):
     def __init__(
@@ -183,6 +187,7 @@ class Write(Operator):
     def set_parameter():
         pass
 
+# * functions for writting a graph file which is a xml file.
 
 def blank_graph_xml():
     root = ET.Element('graph')

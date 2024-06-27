@@ -13,8 +13,8 @@ import esa_snappy_utilities.Raster as Raster
 from esa_snappy_utilities.parameter_enum import CRS
 from esa_snappy_utilities.parameter_enum import WriteType
 
-# Sequential.GPT_PATH = '/home/wk/program_files/ESA-SNAP/10.0/esa-snap/bin/gpt'
-Sequential.GPT_PATH = 'gpt.exe'
+Sequential.GPT_PATH = '/home/wk/program_files/ESA-SNAP/10.0/esa-snap/bin/gpt'
+# Sequential.GPT_PATH = 'gpt.exe'
 
 
 def batch_orb_process(days: List[Path], input_folder_name: str, output_folder_name: str):
@@ -46,7 +46,7 @@ def batch_orb_process(days: List[Path], input_folder_name: str, output_folder_na
         break
 
 
-def batch_graph_process(days: List[Path], graph: Sequential, input_folder_name: str, output_folder_name: str, output_format: WriteType= WriteType.BEAM_DIMAP):
+def batch_graph_process(days: List[Path], graph: Sequential, input_folder_name: str, output_folder_name: str, output_format: WriteType= WriteType.BEAM_DIMAP, is_log: bool= False):
 
     num_days = len(days)
 
@@ -55,17 +55,21 @@ def batch_graph_process(days: List[Path], graph: Sequential, input_folder_name: 
 
         input_path = day / input_folder_name
         files = [file for file in input_path.iterdir() if (file.is_file() and file.suffix == '.dim')]
-        if len(files) == 2 : input_products = (SnapProduct(files[0]), SnapProduct(files[1]))
+        if len(files) == 2 : 
+            input_products = (SnapProduct(files[0]), SnapProduct(files[1]))
         else :
             input_products = SnapProduct(files[0])
 
         if output_format == WriteType.BEAM_DIMAP: output_suffix = '.dim'
         elif output_format == WriteType.GeoTIFF: output_suffix = '.tif'
+
         output_path = day / output_folder_name / f'{day.name}_{output_folder_name}{output_suffix}'
         log_path = day / output_folder_name / f'{day.name}_{output_folder_name}.log'
         
-        # graph(input_products, output_path, output_format= output_format, log_path= log_path)
-        graph(input_products, output_path, output_format= output_format)
+        if is_log :
+            graph(input_products, output_path, output_format= output_format, log_path= log_path)
+        else :
+            graph(input_products, output_path, output_format= output_format)
 
 
         print(Fore.BLUE + f'({idx + 1}/{num_days}) {day.name} has completed!')
@@ -76,10 +80,10 @@ def main():
 
     print(Fore.YELLOW + '==============================================================================================================================\n')
 
-    home_folder = Path('D:\Dataset\Image')
+    home_folder = Path('/home/wk/Projects/Image')
     days = [day for day in home_folder.iterdir() if not day.is_file()]
     days.sort()
-    days = [days[0]]
+    # days = [days[0]]
 
     # batch_orb_process(home_folder, 'Raw', 'Orb')
 

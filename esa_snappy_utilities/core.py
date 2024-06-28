@@ -68,7 +68,7 @@ class SnapProduct():
         temp = np.empty((self.__width * self.__height), dtype= np.float32)
         band.readPixels(0, 0, self.__width, self.__height, temp)
 
-        return temp
+        return np.reshape(temp, (self.__height, self.__width))
     
     def __str__(self):
         return f'Product name: {self.__product_name}, resolution: {self.__width}x{self.__height}, bands: {self.__band_names}.'
@@ -243,6 +243,8 @@ def add_node(root, node_id: str, operator: Operator, last_node_id: Union[str, Li
         
     return root
 
+def _isinstance_by_name(obj, class_name: str):
+    return obj.__class__.__name__ == class_name
 
 class Sequential():
     GPT_PATH = 'gpt'
@@ -286,10 +288,10 @@ class Sequential():
 
 
         # * add all the Read operators as node elements into root. 
-        if isinstance(input, SnapProduct):    # * for just one product as input.
+        if _isinstance_by_name(input, 'SnapProduct'):    # * for just one product as input.
             root = add_node(root, 'Read', Read(input))
             last_node_id = 'Read'
-        elif isinstance(input, tuple) and all(isinstance(item, SnapProduct) for item in input):    # * for multiable products as input.
+        elif isinstance(input, tuple) and all(_isinstance_by_name(item, 'SnapProduct') for item in input):    # * for multiable products as input.
             last_node_id = []
             for idx, p in enumerate(input):
                 suffix = f'({idx+1})' if idx != 0 else ''
@@ -333,7 +335,12 @@ class Sequential():
                 stdout = 'error!\n'
                 stderr = e.output
                 print('Get error from subprocess.CalledProcessEror..')
-                
+            
+            except FileNotFoundError as e:
+                stdout = 'error!\n'
+                stderr = e.strerror
+                print('Get error from FileNotFoundError..')
+
             except Exception as e:
                 stdout = 'error!\n'
                 stderr = e.output

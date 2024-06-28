@@ -13,6 +13,8 @@ import esa_snappy_utilities.Raster as Raster
 from esa_snappy_utilities.parameter_enum import CRS
 from esa_snappy_utilities.parameter_enum import WriteType
 
+
+
 Sequential.GPT_PATH = '/home/wk/program_files/ESA-SNAP/10.0/esa-snap/bin/gpt'
 # Sequential.GPT_PATH = 'gpt.exe'
 
@@ -21,7 +23,6 @@ def batch_orb_process(days: List[Path], input_folder_name: str, output_folder_na
     graph = Sequential(
         Radar.ApplyOrbitFile()
     )
-
     num_days = len(days)
 
     for idx, day in enumerate(days):

@@ -104,7 +104,6 @@ class SnapProduct():
 
 # * The classes below is all about using graph process tools (gpt) to complete the process of the SAR images.
 
-
 from abc import ABC, abstractmethod
 
 class Operator(ABC):
@@ -189,7 +188,7 @@ class Write(Operator):
 
 # * functions for writting a graph file which is a xml file.
 
-def blank_graph_xml():
+def _blank_graph_xml():
     root = ET.Element('graph')
     root.set('id', 'Graph')
 
@@ -199,17 +198,17 @@ def blank_graph_xml():
     return root
 
 
-def add_dict_into_element(element, dict_: dict):
+def _add_dict_into_element(element, dict_: dict):
     for key in dict_:
         sub_element = ET.SubElement(element, key)
         if isinstance(dict_[key], str):    # * for the parameter value is str type.
             sub_element.text = dict_[key]
         elif isinstance(dict_[key], dict):    # * if the parameter value is dict type, keep 
-            add_dict_into_element(sub_element, dict_[key])
+            _add_dict_into_element(sub_element, dict_[key])
         elif dict_[key] == None: continue    # * if the parameter value is none, just skip.
 
 
-def add_node(root, node_id: str, operator: Operator, last_node_id: Union[str, List[str], None] = None):
+def _add_node(root, node_id: str, operator: Operator, last_node_id: Union[str, List[str], None] = None):
     # * add a node element into root element for input operater.
     node_element = ET.SubElement(root, 'node')
     node_element.set('id', node_id)
@@ -239,7 +238,7 @@ def add_node(root, node_id: str, operator: Operator, last_node_id: Union[str, Li
     # * add a parameters element into node element.
     parameters_element = ET.SubElement(node_element, 'parameters')
     parameters_element.set('class', 'com.bc.ceres.binding.dom.XppDomElement')
-    add_dict_into_element(parameters_element, operator.parameters) 
+    _add_dict_into_element(parameters_element, operator.parameters) 
         
     return root
 
@@ -284,19 +283,19 @@ class Sequential():
             except Exception:
                 raise TypeError('The log_path you input must be string or can be converted into string by str() function.')
 
-        root = blank_graph_xml()
+        root = _blank_graph_xml()
 
 
         # * add all the Read operators as node elements into root. 
         if _isinstance_by_name(input, 'SnapProduct'):    # * for just one product as input.
-            root = add_node(root, 'Read', Read(input))
+            root = _add_node(root, 'Read', Read(input))
             last_node_id = 'Read'
         elif isinstance(input, tuple) and all(_isinstance_by_name(item, 'SnapProduct') for item in input):    # * for multiable products as input.
             last_node_id = []
             for idx, p in enumerate(input):
                 suffix = f'({idx+1})' if idx != 0 else ''
                 node_id = 'Read' + suffix
-                root = add_node(root, node_id, Read(p))
+                root = _add_node(root, node_id, Read(p))
                 last_node_id.append(node_id)
         else:
             raise TypeError("The input parameter should be either a SnapProduct instance or a tuple of SnapProduct instances.")
@@ -305,12 +304,12 @@ class Sequential():
         # * add all the operators as node elements into root.
         operator: Operator
         for operator in self.__operators:
-            root = add_node(root, operator.name, operator, last_node_id)
+            root = _add_node(root, operator.name, operator, last_node_id)
             last_node_id = operator.name
 
 
         # * add the Write operator as node element into root.
-        root = add_node(root, 'Write', Write(output_path, output_format), last_node_id)
+        root = _add_node(root, 'Write', Write(output_path, output_format), last_node_id)
 
 
         # * save the graph xml file.

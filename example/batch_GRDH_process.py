@@ -6,12 +6,12 @@ from colorama import init as colorama_init
 colorama_init(autoreset= True)
 from colorama import Fore
 
-from esa_snappy_utilities import SnapProduct
-from esa_snappy_utilities import Sequential
-import esa_snappy_utilities.Radar as Radar
-import esa_snappy_utilities.Raster as Raster
-from esa_snappy_utilities.parameter_enum import CRS
-from esa_snappy_utilities.parameter_enum import WriteType
+from ESA_SNAP_Utils import SnapProduct
+from ESA_SNAP_Utils import Sequential
+import ESA_SNAP_Utils.Radar as Radar
+import ESA_SNAP_Utils.Raster as Raster
+from ESA_SNAP_Utils.parameter_enum import CRS
+from ESA_SNAP_Utils.parameter_enum import WriteType
 
 
 
@@ -112,4 +112,6 @@ def main():
     # )
     # batch_graph_process(days, graph, 'Subset', 'GeoTiff')
 
-main()
+
+if __name__ == '__main__':
+    main()

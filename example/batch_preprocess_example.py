@@ -3,10 +3,10 @@ import sys
 sys.path.append(".")
 
 
-from esa_snappy_utilities import SnapProduct
-from esa_snappy_utilities import Sequential
-import esa_snappy_utilities.Radar as Radar
-import esa_snappy_utilities.Raster as Raster
+from ESA_SNAP_Utils import SnapProduct
+from ESA_SNAP_Utils import Sequential
+import ESA_SNAP_Utils.Radar as Radar
+import ESA_SNAP_Utils.Raster as Raster
 
 Sequential.GPT_PATH = 'path/to/the/gpt'
 

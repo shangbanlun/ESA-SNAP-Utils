@@ -2,7 +2,19 @@
 
 ***
 ## 概览
+
 鉴于ESA-SNAP软件提供的snappy包仅对 snap engine 原生的Java代码做了简易的包装（只提供了对应Java类的Python接口，IDE也不会对此有任何提示），本库在此基础上对snappy作了进一步的包装，使得操作更加符合现代Python使用习惯，并增加了一定的注释。
+
+***
+## 安装
+
+本库建立在snappy包的基础上运行，所以首先要保证已经安装该包。
+
+在ESA-SNAP软件安装完毕后，到软件目录下的bin文件夹中找到 snappy-conf 工具，随后执行下列命令
+
+```shell
+$ ./snappy-conf ~/anaconda3/envs/geo/bin/python ~/anaconda3/envs/geo/lib/python3.11/site-packages
+```
 
 ***
 ## 基础使用
